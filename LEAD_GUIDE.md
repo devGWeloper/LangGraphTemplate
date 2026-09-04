@@ -43,18 +43,33 @@ git push origin team1 team2 team3 team4 team5 team6 team7
 >
 > 저장소: `<주소>` / 여러분 조 브랜치: `team3`
 >
+> **설치 (처음 한 번)**
 > 1. 저장소를 클론하고 `git checkout team3` 으로 브랜치를 옮깁니다.
-> 2. `docs/SETUP_GUIDE.md` 를 따라 환경을 만듭니다. (파이썬 설치부터 단계별로 있습니다)
-> 3. `python run.py` 로 서버를 켜고 http://localhost:8021 에 접속합니다.
-> 4. **0조 탭에서 여행지 추천 예제와 먼저 대화해보고**, `teams/team0/` 코드를 읽어보세요.
-> 5. `teams/team3/` 폴더 안의 `workflow.py`, `prompts.py`, `README.md` 세 개만 채우면 됩니다.
-> 6. 제출 전에 `python scripts\selfcheck.py team3` 을 돌려 `[통과]` 를 확인하세요.
+> 2. **`setup.bat` 더블클릭** — 3~5분 걸립니다. 실패하면 창에 해결 방법이 나옵니다.
+> 3. 자동으로 열리는 **`.env`** 에 아래 값을 채우고 저장하세요.
+>    ```
+>    LLM_BASE_URL=<값>
+>    LLM_API_KEY=<값>
+>    LLM_MODEL=<값>
+>    ```
+> 4. **`start.bat` 더블클릭** → 브라우저가 열립니다.
+>
+> **개발**
+> 5. **0조 탭에서 여행지 추천 예제와 먼저 대화해보고**, `teams/team0/` 코드를 읽어보세요.
+> 6. `teams/team3/` 폴더 안의 `workflow.py`, `prompts.py`, `README.md` 세 개만 채우면 됩니다.
+> 7. 제출 전에 `.venv\Scripts\python.exe scripts\selfcheck.py team3` 을 돌려 `[통과]` 를 확인하세요.
 >
 > **주의: `teams/team3/` 폴더 밖의 파일은 절대 수정하지 마세요.** 나중에 합칠 때 충돌이 납니다.
+>
+> 자세한 설치 안내와 오류 해결은 `docs/SETUP_GUIDE.md` 에 있습니다.
 >
 > 마감: `<날짜>` / 제출: 자기 브랜치에 push
 
 `.env` 값(LLM_BASE_URL, LLM_API_KEY, LLM_MODEL)은 저장소에 넣지 말고 별도 채널로 전달하세요.
+`setup.bat` 이 `.env.example` 을 복사해 `.env` 를 만들어주므로, 조원은 값만 붙여넣으면 됩니다.
+
+> 💡 조원이 `.env` 를 직접 만들면 윈도우 확장자 숨김 때문에 `.env.txt` 가 만들어지는 사고가 잦습니다.
+> `setup.bat` 을 쓰라고 안내하면 이 문제가 아예 생기지 않습니다.
 
 ---
 
@@ -113,17 +128,17 @@ git diff --name-only main..team3
 
 ## 5. 취합 후 검증
 
+조원이 추가한 패키지가 있으므로 다시 설치해야 합니다. `setup.bat` 을 한 번 더 실행하면
+패키지 재설치와 화면 빌드가 같이 됩니다.
+
 ```cmd
-pip install -r requirements.txt
-cd frontend
-npm install
-npm run build
-cd ..
-python scripts\selfcheck.py
-python run.py
+setup.bat
+.venv\Scripts\python.exe scripts\selfcheck.py
+start.bat
 ```
 
 `selfcheck.py` 는 전체 조의 계약·문서 요건을 한 번에 검사합니다.
+(`.env` 는 이미 있으므로 `setup.bat` 이 덮어쓰지 않습니다)
 
 http://localhost:8021 에 접속해 확인할 것:
 
@@ -139,7 +154,7 @@ http://localhost:8021 에 접속해 확인할 것:
 특정 조만 화면 없이 터미널에서 돌려보려면:
 
 ```cmd
-python teams\team3\workflow.py "테스트할 질문"
+.venv\Scripts\python.exe teams\team3\workflow.py "테스트할 질문"
 ```
 
 노드가 하나씩 실행되면서 각 노드가 만든 값이 출력됩니다. 어느 노드에서 이상해지는지 바로 보입니다.

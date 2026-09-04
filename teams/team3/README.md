@@ -120,7 +120,7 @@ graph TD
 
 ## 제출 체크리스트
 
-- [ ] `python scripts\selfcheck.py team3` 통과
+- [ ] `.venv\Scripts\python.exe scripts\selfcheck.py team3` 통과
 - [ ] `TEAM_INFO` 의 name / description / examples(3개) 작성
 - [ ] 화면에서 실제로 대화가 되는 것 확인
 - [ ] 1.1 ~ 1.3 표 작성

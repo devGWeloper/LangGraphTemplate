@@ -274,7 +274,7 @@ UI가 마크다운을 렌더링하므로 마크다운 사용을 지시했고, �
 
 ## 제출 체크리스트
 
-- [x] `python scripts\selfcheck.py team0` 통과
+- [x] `.venv\Scripts\python.exe scripts\selfcheck.py team0` 통과
 - [x] `TEAM_INFO` 의 name / description / examples(3개) 작성
 - [x] 화면에서 실제로 대화가 되는 것 확인
 - [x] 1.1 ~ 1.3 표 작성

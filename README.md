@@ -11,6 +11,9 @@ LangGraph 로 나만의 MultiAgent 를 만들어보는 챌린지 플랫폼입니
 
 ```
 LangGraphTemplate/
+├─ setup.bat               ← ① 처음 한 번 더블클릭 (설치)
+├─ start.bat               ← ② 더블클릭하면 화면이 뜹니다
+├─ .env                    ← 접속 정보. setup.bat 이 여기에 만들어 줍니다
 ├─ app/                    ← 공용 백엔드. 수정하지 마세요
 ├─ frontend/               ← 공용 화면. 수정하지 마세요
 ├─ docs/                   ← 안내 문서
@@ -35,31 +38,53 @@ LangGraphTemplate/
 
 ## 시작하기
 
-1. **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 를 따라 환경을 만듭니다. (파이썬 설치부터 단계별로 있습니다)
-2. `python run.py` 로 서버를 켜고 http://localhost:8021 에 접속합니다.
-3. **0조 탭**에서 여행지 추천 예제와 먼저 대화해봅니다.
-4. `teams/team0/workflow.py` 를 열어 어떻게 만들어졌는지 읽어봅니다.
-5. 우리 조 폴더의 `workflow.py` 를 채우기 시작합니다.
+1. **`setup.bat`** 더블클릭 (처음 한 번, 3~5분)
+2. 자동으로 열리는 **`.env`** 에 값 3개를 채우고 저장 (값은 리드에게 받으세요)
+3. **`start.bat`** 더블클릭 → 브라우저가 열립니다
+
+막히면 **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 에 화면 그림과 오류 해결법이 있습니다.
+
+화면이 뜨면:
+
+4. **0조 탭**에서 여행지 추천 예제와 먼저 대화해봅니다.
+5. `teams/team0/workflow.py` 를 열어 어떻게 만들어졌는지 읽어봅니다.
+6. 우리 조 폴더의 `workflow.py` 를 채우기 시작합니다.
 
 ---
 
 ## 개발 5단계
 
 `teams/teamN/workflow.py` 안에 안내 주석이 단계별로 달려 있습니다.
+**여러분이 만들어야 할 것은 `TEAM_INFO` 와 `build_graph()` 딱 두 개입니다.**
+이 둘만 있으면 서버가 알아서 탭을 만들어 붙여줍니다.
 
 ### 1️⃣ 우리 조 정보 쓰기
 
+탭 이름과 첫 화면의 예시 질문이 됩니다.
+
 ```python
 TEAM_INFO = {
-    "name": "3조 · 레시피 추천 봇",
-    "description": "냉장고 재료로 만들 수 있는 요리를 추천합니다.",
-    "examples": ["계란이랑 양파밖에 없어", "매운 거 먹고 싶어", "10분 야식 알려줘"],
+    "name": "3조 · 레시피 추천 봇",                              # 탭에 표시될 이름
+    "description": "냉장고 재료로 만들 수 있는 요리를 추천합니다.",   # 한 줄 소개
+    "examples": [                                              # 예시 질문 3개 이상
+        "계란이랑 양파밖에 없어",
+        "매운 거 먹고 싶어",
+        "10분 야식 알려줘",
+    ],
 }
 ```
 
 ### 2️⃣ 상태(State) 정의하기
 
-노드끼리 주고받을 값을 정합니다. `user_input` / `messages` / `answer` 는 이미 들어있습니다.
+노드끼리 주고받을 값을 정합니다. 아래 3개는 **이미 들어있습니다.**
+
+| 필드 | 누가 채우나 | 설명 |
+|---|---|---|
+| `user_input` | 서버가 채워줌 | 이번에 사용자가 입력한 문장 |
+| `messages` | 서버가 채워줌 | 이전 대화 이력 |
+| `answer` | **여러분이 채움** | 최종 답변. 화면에 보이는 값입니다 |
+
+여기에 필요한 걸 더하시면 됩니다.
 
 ```python
 class MyState(BaseGraphState):
@@ -77,6 +102,19 @@ def extract_ingredients(state: MyState) -> dict:
     return {"ingredients": text.split(",")}
 ```
 
+LLM 을 부를 때는 `get_llm()` 을 쓰면 됩니다. 접속 정보는 `.env` 에서 알아서 읽어옵니다.
+
+```python
+from app.llm import get_llm
+
+llm = get_llm(temperature=0.3)
+result = llm.invoke([
+    {"role": "system", "content": "당신은 요리 전문가입니다."},
+    {"role": "user", "content": state["user_input"]},
+])
+text = result.content
+```
+
 ### 4️⃣ 그래프 조립하기
 
 ```python
@@ -87,11 +125,15 @@ builder.add_edge(START, "extract_ingredients")
 조건 분기가 필요하면 `teams/team0/workflow.py` 의 `add_conditional_edges` 부분을 보세요.
 
 > 🔑 **마지막 노드에서 `answer` 를 반드시 채워주세요.** 화면에 보이는 값입니다.
+> 안 채우면 "그래프가 끝났지만 answer 값이 비어 있습니다" 라는 안내가 화면에 뜹니다.
+
+개발 전에는 `build_graph()` 가 `NotImplementedError` 를 던지도록 되어 있습니다.
+그 상태에서는 탭이 "아직 개발 중"으로 표시되고, **다른 조에는 아무 영향이 없습니다.**
 
 ### 5️⃣ 자가 점검하고 커밋
 
 ```cmd
-python scripts\selfcheck.py team3
+.venv\Scripts\python.exe scripts\selfcheck.py team3
 ```
 
 `[통과]` 가 나오면 제출 준비 완료입니다.
@@ -105,7 +147,7 @@ python scripts\selfcheck.py team3
 화면을 띄우지 않고 빠르게 확인할 때 씁니다.
 
 ```cmd
-python teams\team3\workflow.py "테스트할 질문"
+.venv\Scripts\python.exe teams\team3\workflow.py "테스트할 질문"
 ```
 
 노드가 순서대로 실행되면서 **각 노드가 만든 값**이 그대로 찍힙니다.
@@ -129,7 +171,7 @@ python teams\team3\workflow.py "테스트할 질문"
 ### 2. 화면에서 확인하기
 
 ```cmd
-python run.py
+start.bat
 ```
 
 http://localhost:8021 에서 우리 조 탭을 열고 대화해봅니다.
@@ -180,7 +222,6 @@ git diff --name-only
 
 ## 더 읽을 것
 
-- [환경 구축 가이드](docs/SETUP_GUIDE.md) — 설치부터 실행까지
-- [API 계약](docs/API_CONTRACT.md) — `TEAM_INFO`, `build_graph()`, State, 응답 형식
+- [환경 구축 가이드](docs/SETUP_GUIDE.md) — 설치, 실행, `.env` 위치, 오류 해결
 - [0조 예제 코드](teams/team0/workflow.py) — 4노드 + 조건분기 MultiAgent
 - [0조 산출물 문서](teams/team0/README.md) — README 모범답안
