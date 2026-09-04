@@ -1,6 +1,7 @@
 """제출 전 자가 점검 스크립트입니다.
 
-    python scripts/selfcheck.py team3
+    python scripts/selfcheck.py team3     우리 조만 검사
+    python scripts/selfcheck.py           전체 조를 한 번에 검사
 
 계약을 지켰는지 확인해줍니다. 통과해야 화면에서 정상 동작합니다.
 """
@@ -53,20 +54,33 @@ def check(team_id: str) -> list[str]:
     return problems
 
 
-def main() -> int:
-    if len(sys.argv) != 2:
-        print("사용법: python scripts/selfcheck.py team3")
-        return 2
-
-    problems = check(sys.argv[1])
+def report(team_id: str) -> bool:
+    """한 조를 검사하고 결과를 출력합니다. 통과하면 True."""
+    problems = check(team_id)
     if problems:
-        print(f"[실패] {len(problems)}건을 고쳐주세요\n")
+        print(f"[실패] {team_id} — {len(problems)}건을 고쳐주세요")
         for problem in problems:
             print(f"  - {problem}")
-        return 1
+        return False
 
-    print("[통과] 제출 준비가 되었습니다.")
-    return 0
+    print(f"[통과] {team_id} — 제출 준비가 되었습니다.")
+    return True
+
+
+def main() -> int:
+    if len(sys.argv) > 2:
+        print("사용법: python scripts/selfcheck.py [team3]")
+        return 2
+
+    # 인자를 주지 않으면 전체 조를 한 번에 검사합니다.
+    if len(sys.argv) == 1:
+        results = []
+        for entry in discover_teams():
+            results.append(report(entry.id))
+            print()
+        return 0 if all(results) else 1
+
+    return 0 if report(sys.argv[1]) else 1
 
 
 if __name__ == "__main__":

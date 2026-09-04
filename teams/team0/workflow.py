@@ -6,10 +6,19 @@
 그래프 구조
     analyze_intent ─┬─ (정보 부족) → ask_clarify ──────────────→ END
                     └─ (정보 충분) → recommend → build_itinerary → END
+
+터미널에서 이 파일만 바로 실행해 볼 수 있습니다. (화면 없이 디버깅할 때 편합니다)
+
+    python teams/team0/workflow.py "친구랑 부산 2박 3일 맛집 위주로"
 """
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
+
+# 이 파일을 직접 실행할 때도 app/ 을 찾을 수 있도록 최상위 폴더를 경로에 추가합니다.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from langgraph.graph import END, START, StateGraph
 
@@ -131,3 +140,35 @@ def build_graph():
     builder.add_edge("build_itinerary", END)
 
     return builder.compile()
+
+
+# ── 터미널에서 바로 실행하기 ─────────────────────────────────────
+# 화면을 띄우지 않고 노드가 어떤 값을 만들어내는지 하나씩 찍어보고 싶을 때 씁니다.
+#
+#     python teams/team0/workflow.py "친구랑 부산 2박 3일 맛집 위주로"
+#
+if __name__ == "__main__":
+    from app.contract import make_initial_state
+    from app.llm import LLMConfigError
+
+    message = " ".join(sys.argv[1:]) or "친구랑 부산 2박 3일 맛집 위주로 추천해줘"
+    print(f"입력: {message}\n")
+
+    answer = ""
+    try:
+        graph = build_graph()
+        for chunk in graph.stream(make_initial_state(message), stream_mode="updates"):
+            for node, update in chunk.items():
+                print(f"── {node}")
+                for key, value in (update or {}).items():
+                    text = str(value).replace("\n", " ")
+                    print(f"   {key} = {text[:160]}{'…' if len(text) > 160 else ''}")
+                if isinstance(update, dict) and update.get("answer"):
+                    answer = update["answer"]
+                print()
+    except (NotImplementedError, LLMConfigError) as exc:
+        print(f"[안내] {exc}")
+        raise SystemExit(1)
+
+    print("=" * 60)
+    print(answer)

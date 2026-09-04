@@ -15,8 +15,18 @@
   6. python scripts/selfcheck.py team1 으로 확인한 뒤 커밋하세요.
 
 막히면 teams/team0/workflow.py (여행지 추천 예제) 를 열어보세요.
+
+터미널에서 이 파일만 바로 실행해 볼 수 있습니다. (화면 없이 디버깅할 때 편합니다)
+
+    python teams/team1/workflow.py "테스트할 질문"
 """
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+# 이 파일을 직접 실행할 때도 app/ 을 찾을 수 있도록 최상위 폴더를 경로에 추가합니다.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from langgraph.graph import END, START, StateGraph
 
@@ -84,3 +94,36 @@ def build_graph():
     # 조건 분기를 쓰고 싶다면 teams/team0/workflow.py 의
     # add_conditional_edges 부분을 참고하세요.
     return builder.compile()
+
+
+# ── 터미널에서 바로 실행하기 ─────────────────────────────────────
+# 화면을 띄우지 않고 노드가 어떤 값을 만들어내는지 하나씩 찍어보고 싶을 때 씁니다.
+# 고칠 필요 없습니다. 그대로 두고 아래처럼 실행하세요.
+#
+#     python teams/team1/workflow.py "테스트할 질문"
+#
+if __name__ == "__main__":
+    from app.contract import make_initial_state
+    from app.llm import LLMConfigError
+
+    message = " ".join(sys.argv[1:]) or "테스트 질문"
+    print(f"입력: {message}\n")
+
+    answer = ""
+    try:
+        graph = build_graph()
+        for chunk in graph.stream(make_initial_state(message), stream_mode="updates"):
+            for node, update in chunk.items():
+                print(f"── {node}")
+                for key, value in (update or {}).items():
+                    text = str(value).replace("\n", " ")
+                    print(f"   {key} = {text[:160]}{'…' if len(text) > 160 else ''}")
+                if isinstance(update, dict) and update.get("answer"):
+                    answer = update["answer"]
+                print()
+    except (NotImplementedError, LLMConfigError) as exc:
+        print(f"[안내] {exc}")
+        raise SystemExit(1)
+
+    print("=" * 60)
+    print(answer)

@@ -8,8 +8,6 @@ langchain==0.3.14
 langchain-core==0.3.29
 langchain-openai==0.2.14
 httpx==0.28.1
-pytest==8.3.4
-pytest-asyncio==0.25.2
 
 # --- 조별 추가 ---
 # 필요한 패키지가 있으면 이 아래에만 한 줄씩 추가해주세요.

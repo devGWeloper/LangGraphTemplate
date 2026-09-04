@@ -1,9 +1,14 @@
 # 리드 운영 가이드 (대외 비공개)
 
-> 이 문서는 리드(운영자) 전용입니다. 팀원에게 배포하는 다른 문서(`README.md`, `docs/*`)에는
-> 사내 환경을 암시하는 워딩이 하나도 들어 있지 않습니다. 그 원칙을 자동으로 지키는 테스트가
-> `tests/test_templates.py::test_no_internal_environment_wording_in_shared_files` 에 있고,
-> 이 `LEAD_GUIDE.md` 파일만 검사에서 제외됩니다. 사내 Bitbucket에 올릴 때 이 파일을 빼고 싶다면
+> 이 문서는 리드(운영자) 전용입니다. 팀원에게 배포하는 다른 문서(`README.md`, `docs/*`)와
+> 모든 소스코드에는 사내 환경을 암시하는 워딩이 하나도 들어 있지 않습니다.
+> 이 `LEAD_GUIDE.md` 만 예외입니다. 조원 제출물이 합쳐진 뒤 다시 한 번 확인하려면:
+>
+> ```bash
+> git ls-files | grep -E '\.(py|md|jsx|js|css|html)$' | grep -v LEAD_GUIDE.md | xargs grep -n "사내\|보안망\|내부망"
+> ```
+>
+> 아무것도 안 나오면 정상입니다. 이 파일 자체를 저장소에서 빼고 싶다면
 > `git rm --cached LEAD_GUIDE.md` 후 `.gitignore` 에 추가하시면 됩니다.
 
 ---
@@ -114,7 +119,7 @@ git diff --name-only main..team3 | grep -v '^teams/team3/'
 ```bash
 pip install -r requirements.txt
 cd frontend && npm install && npm run build && cd ..
-python -m pytest tests/ -q
+python scripts/selfcheck.py          # 전체 조 계약·문서 요건 일괄 검사
 python run.py
 ```
 
@@ -129,11 +134,13 @@ http://localhost:8021 에 접속해 확인할 것:
 한 조에 오류가 있어도 서버는 죽지 않고 그 탭만 빨간 램프 + 오류 메시지가 뜹니다.
 시연 전에 문제 있는 조를 미리 잡아낼 수 있습니다.
 
-조별 자가 점검을 한 번에 돌리려면:
+특정 조만 화면 없이 터미널에서 돌려보려면:
 
 ```bash
-for i in 0 1 2 3 4 5 6 7; do echo "--- team$i ---"; python scripts/selfcheck.py team$i; done
+python teams/team3/workflow.py "테스트할 질문"
 ```
+
+노드가 하나씩 실행되면서 각 노드가 만든 값이 출력됩니다. 어느 노드에서 이상해지는지 바로 보입니다.
 
 ---
 
