@@ -11,8 +11,8 @@ LangGraph 로 나만의 MultiAgent 를 만들어보는 챌린지 플랫폼입니
 
 ```
 LangGraphTemplate/
-├─ setup.bat               ← ① 처음 한 번 더블클릭 (설치)
-├─ start.bat               ← ② 더블클릭하면 화면이 뜹니다
+├─ setup.bat               ← 처음 한 번 더블클릭 (설치)
+├─ run.py                  ← 백엔드 실행 (python run.py)
 ├─ .env                    ← 접속 정보. setup.bat 이 여기에 만들어 줍니다
 ├─ app/                    ← 공용 백엔드. 수정하지 마세요
 ├─ frontend/               ← 공용 화면. 수정하지 마세요
@@ -39,15 +39,26 @@ LangGraphTemplate/
 
 1. **`setup.bat`** 더블클릭 (처음 한 번, 3~5분)
 2. 자동으로 열리는 **`.env`** 에 값 3개를 채우고 저장 (값은 리드에게 받으세요)
-3. **`start.bat`** 더블클릭 → 브라우저가 열립니다
+3. cmd 창 **두 개**를 열어 하나씩 실행합니다.
+
+```cmd
+.venv\Scripts\python.exe run.py
+```
+
+```cmd
+cd frontend
+npm run dev
+```
+
+4. 브라우저에서 **http://localhost:5173** 을 엽니다.
 
 막히면 **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 를 보세요. 직접 명령으로 설치·기동하는 방법도 거기 있습니다.
 
 화면이 뜨면:
 
-4. **0조 탭**에서 여행지 추천 예제와 먼저 대화해봅니다.
-5. `teams/team0/workflow.py` 를 열어 어떻게 만들어졌는지 읽어봅니다.
-6. 우리 조 폴더의 `workflow.py` 를 채우기 시작합니다.
+5. **0조 탭**에서 여행지 추천 예제와 먼저 대화해봅니다.
+6. `teams/team0/workflow.py` 를 열어 어떻게 만들어졌는지 읽어봅니다.
+7. 우리 조 폴더의 `workflow.py` 를 채우기 시작합니다.
 
 ---
 
@@ -131,7 +142,7 @@ builder.add_edge(START, "extract_ingredients")
 
 ### 5️⃣ 화면에서 확인하고 커밋
 
-`start.bat` 으로 화면을 띄워 **예시 질문 3개가 각각 정상 동작하는지** 확인하세요.
+`python run.py` 와 `npm run dev` 로 화면을 띄워 **예시 질문 3개가 각각 정상 동작하는지** 확인하세요.
 답변과 하단의 실행 노드 배지가 함께 보이게 캡처해서 `teams/team3/screenshots/` 에 넣고,
 `README.md` 3.1 에 붙인 뒤 커밋하시면 됩니다.
 
@@ -168,10 +179,14 @@ builder.add_edge(START, "extract_ingredients")
 ### 2. 화면에서 확인하기
 
 ```cmd
-start.bat
+.venv\Scripts\python.exe run.py
+```
+```cmd
+cd frontend
+npm run dev
 ```
 
-http://localhost:8021 에서 우리 조 탭을 열고 대화해봅니다.
+http://localhost:5173 에서 우리 조 탭을 열고 대화해봅니다.
 답변 아래에 **실제로 실행된 노드와 소요 시간**이 표시되니, 의도한 경로로 흘렀는지 바로 확인할 수 있습니다.
 
 ```

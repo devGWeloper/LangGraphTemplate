@@ -52,12 +52,13 @@ git push origin team1 team2 team3 team4 team5 team6 team7
 >    LLM_API_KEY=<값>
 >    LLM_MODEL=<값>
 >    ```
-> 4. **`start.bat` 더블클릭** → 브라우저가 열립니다.
+> 4. cmd 창 두 개를 열고 각각 `.venv\Scripts\python.exe run.py` 와 `cd frontend` + `npm run dev` 를 실행한 뒤,
+>    브라우저에서 **http://localhost:5173** 을 여세요.
 >
 > **개발**
 > 5. **0조 탭에서 여행지 추천 예제와 먼저 대화해보고**, `teams/team0/` 코드를 읽어보세요.
 > 6. `teams/team3/` 폴더 안의 `workflow.py`, `prompts.py`, `README.md` 세 개만 채우면 됩니다.
-> 7. 제출 전에 `start.bat` 으로 화면을 띄워 예시 질문 3개가 동작하는지 확인하고, 그 화면을 캡처해 README 3.1 에 붙이세요.
+> 7. 제출 전에 화면을 띄워 예시 질문 3개가 동작하는지 확인하고, 그 화면을 캡처해 README 3.1 에 붙이세요.
 >
 > **주의: `teams/team3/` 폴더 밖의 파일은 절대 수정하지 마세요.** 나중에 합칠 때 충돌이 납니다.
 >
@@ -133,12 +134,21 @@ git diff --name-only main..team3
 
 ```cmd
 setup.bat
-start.bat
+```
+
+그다음 cmd 창 두 개에서 각각 실행합니다.
+
+```cmd
+.venv\Scripts\python.exe run.py
+```
+```cmd
+cd frontend
+npm run dev
 ```
 
 (`.env` 는 이미 있으므로 `setup.bat` 이 덮어쓰지 않습니다)
 
-http://localhost:8021 에 접속해 확인할 것:
+http://localhost:5173 에 접속해 확인할 것:
 
 - [ ] 탭이 8개(0조~7조) 보이는가
 - [ ] 각 조 램프가 켜져 있는가 (앰버 = 정상, 빈 원 = 미구현, 빨강 = 오류)

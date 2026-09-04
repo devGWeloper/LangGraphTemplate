@@ -50,11 +50,9 @@ if exist ".env" (
 echo.
 
 REM ---------------------------------------------------------- 5
-echo [5/5] 화면 빌드 중... (1~2분)
+echo [5/5] 화면 패키지 설치 중... (1~2분)
 cd frontend
 call npm install --silent
-if errorlevel 1 goto FAIL_NPM
-call npm run build
 if errorlevel 1 goto FAIL_NPM
 cd ..
 echo       완료
@@ -75,12 +73,19 @@ echo         LLM_MODEL=
 echo.
 echo      값은 리드에게 받으시면 됩니다.
 echo.
-echo   2. start.bat 을 더블클릭하면 화면이 뜹니다.
+echo   2. cmd 창을 두 개 열고 아래를 하나씩 실행하세요.
+echo.
+echo         .venv\Scripts\python.exe run.py
+echo.
+echo         cd frontend
+echo         npm run dev
+echo.
+echo      그다음 브라우저에서 http://localhost:5173 을 여세요.
 echo.
 pause
 start "" notepad .env
 echo.
-echo 준비가 끝났습니다. start.bat 을 더블클릭하세요.
+echo 준비가 끝났습니다. run.py 와 npm run dev 로 화면을 띄우세요.
 echo.
 pause
 exit /b 0
@@ -144,7 +149,7 @@ goto FAIL
 :FAIL_NPM
 cd /d "%~dp0"
 echo.
-echo   [실패] 화면 빌드에 실패했습니다.
+echo   [실패] 화면 패키지 설치에 실패했습니다.
 echo.
 echo   해결 방법
 echo     - 인터넷 연결을 확인하세요.
