@@ -193,7 +193,7 @@ analyze_intent 812ms —— recommend 1.5s —— build_itinerary 2.2s
 | `teams/teamN/prompts.py` | 프롬프트 |
 | `teams/teamN/README.md` | **산출물 문서 — 이 문서로 평가합니다** |
 
-`README.md` 는 템플릿이 이미 들어있습니다. 세 장을 채우시면 됩니다.
+`README.md` 는 템플릿이 이미 들어있습니다. 맨 위의 **주제 선정 회의** 표(회의 일시 / 장소 / 참석자)를 먼저 채우고, 이어서 세 장을 채우시면 됩니다.
 
 1. **LangGraph 워크플로우 설계** — State, 노드, 엣지, mermaid 다이어그램, 그렇게 설계한 이유
 2. **프롬프트 엔지니어링** — 노드별 프롬프트 전문, 설계 의도, 개선 전/후
