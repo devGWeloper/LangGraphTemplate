@@ -2,13 +2,11 @@
 
 > 이 문서는 리드(운영자) 전용입니다. 팀원에게 배포하는 다른 문서(`README.md`, `docs/*`)와
 > 모든 소스코드에는 사내 환경을 암시하는 워딩이 하나도 들어 있지 않습니다.
-> 이 `LEAD_GUIDE.md` 만 예외입니다. 조원 제출물이 합쳐진 뒤 다시 한 번 확인하려면:
+> 이 `LEAD_GUIDE.md` 만 예외입니다. 조원 제출물이 합쳐진 뒤 다시 한 번 확인하려면
+> VS Code 등에서 프로젝트 전체 검색(`Ctrl + Shift + F`)으로 `사내`, `보안망`, `내부망` 을 찾아보세요.
+> 이 파일 말고 다른 곳에서 나오면 그 조가 써넣은 것입니다.
 >
-> ```bash
-> git ls-files | grep -E '\.(py|md|jsx|js|css|html)$' | grep -v LEAD_GUIDE.md | xargs grep -n "사내\|보안망\|내부망"
-> ```
->
-> 아무것도 안 나오면 정상입니다. 이 파일 자체를 저장소에서 빼고 싶다면
+> 이 파일 자체를 저장소에서 빼고 싶다면
 > `git rm --cached LEAD_GUIDE.md` 후 `.gitignore` 에 추가하시면 됩니다.
 
 ---
@@ -17,24 +15,23 @@
 
 사내 Bitbucket에 저장소를 하나 만들고 main을 올립니다.
 
-```bash
+```cmd
 git remote set-url origin <사내 Bitbucket 저장소 주소>
 git push -u origin main
 ```
 
-조별 브랜치를 main에서 분기해 각 조에 배정합니다.
+조별 브랜치를 main에서 분기해 각 조에 배정합니다. 한 줄씩 복사해 붙여넣으면 됩니다.
 
-```bash
-for i in 1 2 3 4 5 6 7; do
-  git branch team$i main
-  git push origin team$i
-done
+```cmd
+git branch team1 main
+git branch team2 main
+git branch team3 main
+git branch team4 main
+git branch team5 main
+git branch team6 main
+git branch team7 main
+git push origin team1 team2 team3 team4 team5 team6 team7
 ```
-
-> Windows PowerShell이라면:
-> ```powershell
-> 1..7 | ForEach-Object { git branch "team$_" main; git push origin "team$_" }
-> ```
 
 각 조에는 자기 브랜치의 push 권한만 주면 실수로 main을 건드리는 일이 없습니다.
 
@@ -51,7 +48,7 @@ done
 > 3. `python run.py` 로 서버를 켜고 http://localhost:8021 에 접속합니다.
 > 4. **0조 탭에서 여행지 추천 예제와 먼저 대화해보고**, `teams/team0/` 코드를 읽어보세요.
 > 5. `teams/team3/` 폴더 안의 `workflow.py`, `prompts.py`, `README.md` 세 개만 채우면 됩니다.
-> 6. 제출 전에 `python scripts/selfcheck.py team3` 을 돌려 `[통과]` 를 확인하세요.
+> 6. 제출 전에 `python scripts\selfcheck.py team3` 을 돌려 `[통과]` 를 확인하세요.
 >
 > **주의: `teams/team3/` 폴더 밖의 파일은 절대 수정하지 마세요.** 나중에 합칠 때 충돌이 납니다.
 >
@@ -76,7 +73,7 @@ done
 
 ## 4. 취합 절차
 
-```bash
+```cmd
 git checkout main
 git pull
 
@@ -102,26 +99,31 @@ tavily-python==0.5.0
 → 두 줄 다 남기고 충돌 마커만 지우면 됩니다.
 
 만약 조 폴더 밖 파일에서 충돌이 났다면 그 조가 규칙을 어긴 것입니다.
-`git log --stat team3 ^main` 으로 어떤 파일을 건드렸는지 확인하고 되돌리세요.
 
-각 조가 규칙을 지켰는지 미리 확인하려면:
+각 조가 자기 폴더만 건드렸는지 merge 전에 미리 확인하려면:
 
-```bash
-git diff --name-only main..team3 | grep -v '^teams/team3/'
+```cmd
+git diff --name-only main..team3
 ```
 
-아무것도 안 나오면 정상입니다.
+`teams/team3/` 로 시작하지 않는 파일이 목록에 있으면 그 조가 규칙을 어긴 것입니다.
+해당 조에 되돌리라고 요청하거나, merge 후 그 파일만 `git checkout main -- <파일경로>` 로 복구하세요.
 
 ---
 
 ## 5. 취합 후 검증
 
-```bash
+```cmd
 pip install -r requirements.txt
-cd frontend && npm install && npm run build && cd ..
-python scripts/selfcheck.py          # 전체 조 계약·문서 요건 일괄 검사
+cd frontend
+npm install
+npm run build
+cd ..
+python scripts\selfcheck.py
 python run.py
 ```
+
+`selfcheck.py` 는 전체 조의 계약·문서 요건을 한 번에 검사합니다.
 
 http://localhost:8021 에 접속해 확인할 것:
 
@@ -136,8 +138,8 @@ http://localhost:8021 에 접속해 확인할 것:
 
 특정 조만 화면 없이 터미널에서 돌려보려면:
 
-```bash
-python teams/team3/workflow.py "테스트할 질문"
+```cmd
+python teams\team3\workflow.py "테스트할 질문"
 ```
 
 노드가 하나씩 실행되면서 각 노드가 만든 값이 출력됩니다. 어느 노드에서 이상해지는지 바로 보입니다.

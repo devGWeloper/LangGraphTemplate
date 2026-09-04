@@ -90,8 +90,8 @@ builder.add_edge(START, "extract_ingredients")
 
 ### 5️⃣ 자가 점검하고 커밋
 
-```bash
-python scripts/selfcheck.py team3
+```cmd
+python scripts\selfcheck.py team3
 ```
 
 `[통과]` 가 나오면 제출 준비 완료입니다.
@@ -104,8 +104,8 @@ python scripts/selfcheck.py team3
 
 화면을 띄우지 않고 빠르게 확인할 때 씁니다.
 
-```bash
-python teams/team3/workflow.py "테스트할 질문"
+```cmd
+python teams\team3\workflow.py "테스트할 질문"
 ```
 
 노드가 순서대로 실행되면서 **각 노드가 만든 값**이 그대로 찍힙니다.
@@ -128,7 +128,7 @@ python teams/team3/workflow.py "테스트할 질문"
 
 ### 2. 화면에서 확인하기
 
-```bash
+```cmd
 python run.py
 ```
 
@@ -170,7 +170,7 @@ analyze_intent 812ms —— recommend 1.5s —— build_itinerary 2.2s
 
 커밋 전에 확인해보세요.
 
-```bash
+```cmd
 git diff --name-only
 ```
 

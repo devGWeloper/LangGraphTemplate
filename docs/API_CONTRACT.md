@@ -182,6 +182,6 @@ text = result.content
 
 제출 전에 자가 점검을 돌려보세요.
 
-```bash
-python scripts/selfcheck.py team3
+```cmd
+python scripts\selfcheck.py team3
 ```
