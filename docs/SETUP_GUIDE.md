@@ -15,19 +15,30 @@ Windows 기준입니다. **설치 → `.env` 채우기 → 기동** 세 단계�
 
 ## 1단계 — 설치
 
-프로젝트 폴더의 **`setup.bat`** 을 더블클릭하세요. 3~5분 걸립니다.
-파이썬 패키지 설치, `.env` 생성, 화면 패키지(`npm install`) 설치까지 한 번에 됩니다.
-
-직접 하고 싶다면 cmd 에서 프로젝트 폴더로 이동한 뒤:
+**cmd** 를 열고 프로젝트 폴더로 이동한 뒤, 아래를 위에서부터 순서대로 실행하세요.
+처음 한 번만 하면 됩니다. 3~5분 걸립니다.
 
 ```cmd
+cd C:\work\LangGraphTemplate
+
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
+
 copy .env.example .env
+
 cd frontend
 npm install
 cd ..
 ```
+
+| 명령 | 하는 일 |
+|---|---|
+| `python -m venv .venv` | 이 프로젝트 전용 파이썬 환경을 만듭니다 |
+| `pip install -r requirements.txt` | LangGraph·FastAPI 등 파이썬 패키지 설치 (2~3분) |
+| `copy .env.example .env` | 접속 정보 파일을 만듭니다 |
+| `npm install` | 화면(React) 패키지 설치 (1~2분) |
+
+> `.venv\Scripts\python.exe` 를 쓰면 activate 없이 이 프로젝트 환경의 파이썬이 실행됩니다.
 
 ---
 
@@ -77,7 +88,7 @@ npm run dev
 브라우저에서 **http://localhost:5173** 을 여세요. 탭이 8개(0조 ~ 7조) 보이면 성공입니다.
 화면(5173)이 `/api` 요청을 백엔드(8021)로 넘기는 구조라, 접속은 **5173** 으로 합니다.
 
-> `npm install` 은 처음 한 번만 하면 됩니다. (`setup.bat` 이 이미 해둡니다)
+> `npm install` 은 1단계에서 한 번만 하면 됩니다. 이후에는 `npm run dev` 만 쓰면 됩니다.
 > 파이썬 코드를 고치고 저장하면 백엔드가 알아서 다시 뜨고, 화면 코드는 저장하는 순간 반영됩니다.
 
 ---
@@ -98,7 +109,7 @@ npm run dev
 
 | 증상 | 확인할 것 |
 |---|---|
-| `setup.bat` 창이 깜빡하고 사라짐 | 폴더를 `C:\work\LangGraphTemplate` 처럼 짧고 한글·공백 없는 경로로 옮기기 |
+| `python -m venv .venv` 가 실패함 | 폴더를 `C:\work\LangGraphTemplate` 처럼 짧고 한글·공백 없는 경로로 옮기기 (OneDrive 동기화 폴더 주의) |
 | 파이썬 / Node.js 를 못 찾음 | 설치 여부와 PATH 체크, 설치 후 창 다시 열기 |
 | "LLM 접속 정보가 설정되지 않았습니다" | `.env` 값 세 개 확인 후 **서버 재시작** (`dir .env*` 로 `.env.txt` 인지도 확인) |
 | `ModuleNotFoundError: No module named 'app'` | 프로젝트 최상위 폴더에서 실행했는지 확인 |

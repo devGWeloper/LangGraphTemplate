@@ -11,9 +11,9 @@ LangGraph 로 나만의 MultiAgent 를 만들어보는 챌린지 플랫폼입니
 
 ```
 LangGraphTemplate/
-├─ setup.bat               ← 처음 한 번 더블클릭 (설치)
 ├─ run.py                  ← 백엔드 실행 (python run.py)
-├─ .env                    ← 접속 정보. setup.bat 이 여기에 만들어 줍니다
+├─ .env                    ← 접속 정보. copy .env.example .env 로 만듭니다
+├─ requirements.txt        ← 파이썬 패키지 목록
 ├─ app/                    ← 공용 백엔드. 수정하지 마세요
 ├─ frontend/               ← 공용 화면. 수정하지 마세요
 ├─ docs/                   ← 안내 문서
@@ -37,8 +37,18 @@ LangGraphTemplate/
 
 ## 시작하기
 
-1. **`setup.bat`** 더블클릭 (처음 한 번, 3~5분)
-2. 자동으로 열리는 **`.env`** 에 값 3개를 채우고 저장 (값은 리드에게 받으세요)
+1. cmd 에서 프로젝트 폴더로 이동한 뒤, 처음 한 번만 설치합니다. (3~5분)
+
+```cmd
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+copy .env.example .env
+cd frontend
+npm install
+cd ..
+```
+
+2. `notepad .env` 로 열어 값 3개를 채우고 저장합니다. (값은 리드에게 받으세요)
 3. cmd 창 **두 개**를 열어 하나씩 실행합니다.
 
 ```cmd
@@ -52,7 +62,7 @@ npm run dev
 
 4. 브라우저에서 **http://localhost:5173** 을 엽니다.
 
-막히면 **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 를 보세요. 직접 명령으로 설치·기동하는 방법도 거기 있습니다.
+각 명령이 무엇을 하는지와 오류 해결은 **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 에 정리돼 있습니다.
 
 화면이 뜨면:
 
@@ -205,7 +215,8 @@ analyze_intent 812ms —— recommend 1.5s —— build_itinerary 2.2s
 | `teams/teamN/prompts.py` | 프롬프트 |
 | `teams/teamN/README.md` | **산출물 문서 — 이 문서로 평가합니다** |
 
-`README.md` 는 템플릿이 이미 들어있습니다. 맨 위의 **주제 선정 회의** 표(회의 일시 / 장소 / 참석자)를 먼저 채우고, 이어서 세 장을 채우시면 됩니다.
+`README.md` 는 템플릿이 이미 들어있습니다. 맨 위의 **주제 선정 회의** 표를 먼저 채우고, 세 장을 쓴 뒤,
+맨 끝의 **산출물 정리 회의** 표까지 채우면 끝입니다. (두 회의 표 모두 일시 / 장소 / 참석자를 적습니다)
 
 1. **LangGraph 워크플로우 설계** — State, 노드, 엣지, mermaid 다이어그램, 그렇게 설계한 이유
 2. **프롬프트 엔지니어링** — 노드별 프롬프트 전문, 설계 의도, 개선 전/후
