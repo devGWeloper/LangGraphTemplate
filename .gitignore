@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# 환경변수 (실제 키는 절대 커밋하지 않습니다)
+.env
+.env.local
+
+# Node / Vite
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# 개인 복원 메모 (배포 대상 아님)
+LangGraphTemplate_복원_스펙.md
+LangGraphTemplate_복원_프롬프트.md
