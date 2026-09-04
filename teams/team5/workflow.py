@@ -12,7 +12,7 @@
   3. 노드 함수를 하나씩 만듭니다. (state 를 받아 바뀐 값만 dict 로 반환)
   4. build_graph() 에서 노드와 엣지를 연결합니다.
   5. 마지막 노드에서 answer 를 반드시 채웁니다. 이게 화면에 보이는 답변입니다.
-  6. python scripts/selfcheck.py team5 으로 확인한 뒤 커밋하세요.
+  6. start.bat 으로 화면을 띄워 예시 질문이 동작하는지 확인한 뒤 커밋하세요.
 
 막히면 teams/team0/workflow.py (여행지 추천 예제) 를 열어보세요.
 

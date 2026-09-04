@@ -17,7 +17,6 @@ LangGraphTemplate/
 ├─ app/                    ← 공용 백엔드. 수정하지 마세요
 ├─ frontend/               ← 공용 화면. 수정하지 마세요
 ├─ docs/                   ← 안내 문서
-├─ scripts/selfcheck.py    ← 제출 전 자가 점검
 └─ teams/
    ├─ team0/               ← 📖 예제 (여행지 추천). 먼저 읽어보세요
    │  ├─ workflow.py
@@ -42,7 +41,7 @@ LangGraphTemplate/
 2. 자동으로 열리는 **`.env`** 에 값 3개를 채우고 저장 (값은 리드에게 받으세요)
 3. **`start.bat`** 더블클릭 → 브라우저가 열립니다
 
-막히면 **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 에 화면 그림과 오류 해결법이 있습니다.
+막히면 **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 를 보세요. 직접 명령으로 설치·기동하는 방법도 거기 있습니다.
 
 화면이 뜨면:
 
@@ -130,13 +129,11 @@ builder.add_edge(START, "extract_ingredients")
 개발 전에는 `build_graph()` 가 `NotImplementedError` 를 던지도록 되어 있습니다.
 그 상태에서는 탭이 "아직 개발 중"으로 표시되고, **다른 조에는 아무 영향이 없습니다.**
 
-### 5️⃣ 자가 점검하고 커밋
+### 5️⃣ 화면에서 확인하고 커밋
 
-```cmd
-.venv\Scripts\python.exe scripts\selfcheck.py team3
-```
-
-`[통과]` 가 나오면 제출 준비 완료입니다.
+`start.bat` 으로 화면을 띄워 **예시 질문 3개가 각각 정상 동작하는지** 확인하세요.
+답변과 하단의 실행 노드 배지가 함께 보이게 캡처해서 `teams/team3/screenshots/` 에 넣고,
+`README.md` 3.1 에 붙인 뒤 커밋하시면 됩니다.
 
 ---
 
@@ -197,7 +194,7 @@ analyze_intent 812ms —— recommend 1.5s —— build_itinerary 2.2s
 
 1. **LangGraph 워크플로우 설계** — State, 노드, 엣지, mermaid 다이어그램, 그렇게 설계한 이유
 2. **프롬프트 엔지니어링** — 노드별 프롬프트 전문, 설계 의도, 개선 전/후
-3. **실행 결과 & 회고** — 실행 예시(실패 케이스 포함), 잘 된 점과 한계, 역할 분담, 배운 점
+3. **실행 결과 & 회고** — 예시 질문 3개가 동작하는 화면 캡처, 잘 된 점과 한계, 배운 점
 
 **[teams/team0/README.md](teams/team0/README.md) 가 이 세 장을 다 채운 모범답안입니다.** 먼저 읽어보세요.
 
@@ -222,6 +219,6 @@ git diff --name-only
 
 ## 더 읽을 것
 
-- [환경 구축 가이드](docs/SETUP_GUIDE.md) — 설치, 실행, `.env` 위치, 오류 해결
+- [환경 구축 가이드](docs/SETUP_GUIDE.md) — 설치, `.env`, 기동(`python run.py` / `npm install`)
 - [0조 예제 코드](teams/team0/workflow.py) — 4노드 + 조건분기 MultiAgent
 - [0조 산출물 문서](teams/team0/README.md) — README 모범답안
