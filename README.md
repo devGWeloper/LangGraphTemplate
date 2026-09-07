@@ -37,7 +37,19 @@ LangGraphTemplate/
 
 ## 시작하기
 
-1. cmd 에서 프로젝트 폴더로 이동한 뒤, 처음 한 번만 설치합니다. (3~5분)
+1. 저장소를 받고 **우리 조 브랜치로 이동**합니다. (`team3` 은 자기 조 번호로 바꾸세요)
+
+```cmd
+cd C:\work
+git clone <저장소 주소>
+cd LangGraphTemplate
+git checkout team3
+git branch --show-current
+```
+
+마지막 줄이 `team3` 으로 나오면 제대로 이동한 것입니다. `main` 이 나오면 다시 `git checkout team3` 하세요.
+
+2. 이어서 아래를 실행해 설치합니다. 처음 한 번만 하면 됩니다. (3~5분)
 
 ```cmd
 python -m venv .venv
@@ -48,8 +60,8 @@ npm install
 cd ..
 ```
 
-2. `notepad .env` 로 열어 값 3개를 채우고 저장합니다. (값은 리드에게 받으세요)
-3. cmd 창 **두 개**를 열어 하나씩 실행합니다.
+3. `notepad .env` 로 열어 값 3개를 채우고 저장합니다. (값은 리드에게 받으세요)
+4. cmd 창 **두 개**를 열어 하나씩 실행합니다.
 
 ```cmd
 .venv\Scripts\python.exe run.py
@@ -60,15 +72,15 @@ cd frontend
 npm run dev
 ```
 
-4. 브라우저에서 **http://localhost:5173** 을 엽니다.
+5. 브라우저에서 **http://localhost:5173** 을 엽니다.
 
 각 명령이 무엇을 하는지와 오류 해결은 **[docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** 에 정리돼 있습니다.
 
 화면이 뜨면:
 
-5. **0조 탭**에서 여행지 추천 예제와 먼저 대화해봅니다.
-6. `teams/team0/workflow.py` 를 열어 어떻게 만들어졌는지 읽어봅니다.
-7. 우리 조 폴더의 `workflow.py` 를 채우기 시작합니다.
+6. **0조 탭**에서 여행지 추천 예제와 먼저 대화해봅니다.
+7. `teams/team0/workflow.py` 를 열어 어떻게 만들어졌는지 읽어봅니다.
+8. 우리 조 폴더의 `workflow.py` 를 채우기 시작합니다.
 
 ---
 
@@ -154,7 +166,19 @@ builder.add_edge(START, "extract_ingredients")
 
 `python run.py` 와 `npm run dev` 로 화면을 띄워 **예시 질문 3개가 각각 정상 동작하는지** 확인하세요.
 답변과 하단의 실행 노드 배지가 함께 보이게 캡처해서 `teams/team3/screenshots/` 에 넣고,
-`README.md` 3.1 에 붙인 뒤 커밋하시면 됩니다.
+`README.md` 3.1 에 붙인 뒤 **우리 조 브랜치에** 커밋·푸시하시면 됩니다.
+
+```cmd
+:: 우리 조 브랜치가 맞는지 먼저 확인
+git branch --show-current
+
+git add teams/team3
+git commit -m "3조 산출물"
+git push origin team3
+```
+
+> ⚠️ `main` 에는 push 하지 마세요. `git add .` 대신 **`git add teams/team3`** 처럼 우리 조 폴더만 담으면
+> 실수로 다른 파일이 딸려 들어가지 않습니다.
 
 ---
 

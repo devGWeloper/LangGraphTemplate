@@ -1,6 +1,6 @@
 # 환경 구축 가이드
 
-Windows 기준입니다. **설치 → `.env` 채우기 → 기동** 세 단계면 끝납니다.
+Windows 기준입니다. **저장소 받기 → 설치 → `.env` 채우기 → 기동** 순서로 진행합니다.
 막히면 화면을 캡처해서 리드에게 보내주세요.
 
 **미리 깔려 있어야 하는 것**
@@ -10,6 +10,43 @@ Windows 기준입니다. **설치 → `.env` 채우기 → 기동** 세 단계�
 - Node.js LTS — [nodejs.org](https://nodejs.org/)
 
 설치했는데 인식이 안 되면 창을 닫았다가 다시 여세요.
+
+---
+
+## 0단계 — 저장소 받고 우리 조 브랜치로 이동
+
+Git 이 없으면 [git-scm.com](https://git-scm.com/download/win) 에서 받아 설치하세요. (설정은 전부 기본값)
+
+cmd 를 열고, 프로젝트를 받아둘 폴더(예: `C:\work`, 없으면 미리 만들어 두세요)에서 아래를 실행합니다.
+**`team3` 은 자기 조 번호로 바꾸세요.**
+
+```cmd
+cd C:\work
+git clone <저장소 주소>
+cd LangGraphTemplate
+git checkout team3
+```
+
+`cd` 뒤의 폴더 이름은 클론하면 생기는 저장소 이름입니다.
+
+제대로 이동했는지 확인합니다.
+
+```cmd
+git branch --show-current
+```
+
+`team3` 이 나오면 정상입니다. `main` 이 나오면 `git checkout team3` 을 다시 실행하세요.
+
+> ⚠️ **브랜치 이동을 건너뛰고 `main` 에서 작업하면 안 됩니다.** 나중에 제출할 곳이 없습니다.
+> 조 브랜치는 리드가 미리 만들어 뒀으므로 `git checkout team3` 만 하면 바로 붙습니다.
+
+작업이 끝나면 우리 조 브랜치에 그대로 올립니다.
+
+```cmd
+git add teams/team3
+git commit -m "3조 산출물"
+git push origin team3
+```
 
 ---
 
@@ -109,6 +146,8 @@ npm run dev
 
 | 증상 | 확인할 것 |
 |---|---|
+| `git clone` 이 인증을 요구함 | Bitbucket 계정으로 로그인하면 됩니다. 계속 실패하면 리드에게 접근 권한을 요청하세요 |
+| `git push` 가 거부됨 (`main`) | `git branch --show-current` 로 우리 조 브랜치인지 확인. `main` 이면 `git checkout team3` 후 다시 커밋 |
 | `python -m venv .venv` 가 실패함 | 폴더를 `C:\work\LangGraphTemplate` 처럼 짧고 한글·공백 없는 경로로 옮기기 (OneDrive 동기화 폴더 주의) |
 | 파이썬 / Node.js 를 못 찾음 | 설치 여부와 PATH 체크, 설치 후 창 다시 열기 |
 | "LLM 접속 정보가 설정되지 않았습니다" | `.env` 값 세 개 확인 후 **서버 재시작** (`dir .env*` 로 `.env.txt` 인지도 확인) |

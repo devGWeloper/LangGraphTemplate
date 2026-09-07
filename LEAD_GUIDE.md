@@ -44,7 +44,14 @@ git push origin team1 team2 team3 team4 team5 team6 team7
 > 저장소: `<주소>` / 여러분 조 브랜치: `team3`
 >
 > **설치 (처음 한 번)**
-> 1. 저장소를 클론하고 `git checkout team3` 으로 브랜치를 옮깁니다.
+> 1. 저장소를 받고 **우리 조 브랜치로 이동**합니다.
+>    ```cmd
+>    git clone <주소>
+>    cd LangGraphTemplate
+>    git checkout team3
+>    git branch --show-current
+>    ```
+>    마지막 명령이 `team3` 을 출력하면 정상입니다.
 > 2. cmd 를 열고 프로젝트 폴더로 이동한 뒤 아래를 순서대로 실행하세요. (3~5분)
 >    ```cmd
 >    python -m venv .venv
