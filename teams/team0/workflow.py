@@ -4,8 +4,9 @@
 그래프를 어떻게 나누고, 상태를 어떻게 넘기고, 조건 분기를 어떻게 거는지 보세요.
 
 그래프 구조
-    analyze_intent ─┬─ (정보 부족) → ask_clarify ──────────────→ END
-                    └─ (정보 충분) → recommend → build_itinerary → END
+    analyze_intent ─┬─ (이어지는 질문) → answer_follow_up ────────→ END
+                    ├─ (정보 부족)     → ask_clarify ─────────────→ END
+                    └─ (정보 충분)     → recommend → build_itinerary → END
 
 터미널에서 이 파일만 바로 실행해 볼 수 있습니다. (화면 없이 디버깅할 때 편합니다)
 
@@ -28,6 +29,7 @@ from teams.team0.prompts import (
     ANALYZE_INTENT_SYSTEM,
     ASK_CLARIFY_SYSTEM,
     BUILD_ITINERARY_SYSTEM,
+    FOLLOW_UP_SYSTEM,
     RECOMMEND_SYSTEM,
 )
 
@@ -47,6 +49,7 @@ REQUIRED_FIELDS = ("region", "days")
 class TravelState(BaseGraphState):
     """0조가 사용하는 상태입니다. BaseGraphState 를 상속해 필드를 더했습니다."""
 
+    intent: str         # "plan"(새로 짜달라) 또는 "followup"(방금 답변에 이어지는 질문)
     preferences: dict   # {"region": ..., "days": ..., "companion": ..., "style": [...]}
     missing: list[str]  # 아직 모르는 필수 항목
     candidates: str     # recommend 노드가 만든 후보 목록
@@ -72,7 +75,7 @@ def _ask(system: str, user: str, history: list[dict] | None = None,
 
 
 # ── 노드 1: 의도 분석 ────────────────────────────────────────────
-# 사용자 발화에서 여행 조건을 뽑아내고, 추천을 진행할 만큼 정보가 모였는지 판단합니다.
+# 여행 조건을 뽑고, (1) 새로 짜달라는 요청인지 (2) 방금 답변에 이어지는 질문인지 가려냅니다.
 def analyze_intent(state: TravelState) -> dict:
     # history 를 넘기면 "부산" 을 첫 턴에, "3일" 을 다음 턴에 말해도 둘 다 잡힙니다.
     raw = _ask(
@@ -84,21 +87,39 @@ def analyze_intent(state: TravelState) -> dict:
 
     # LLM 이 JSON 앞뒤에 설명 문장을 붙일 수 있으니 방어적으로 파싱합니다.
     try:
-        preferences = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
+        parsed = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
     except (ValueError, json.JSONDecodeError):
-        preferences = {"region": None, "days": None, "companion": None, "style": []}
+        parsed = {}
+
+    intent = "followup" if parsed.get("intent") == "followup" else "plan"
+    preferences = {key: parsed.get(key) for key in ("region", "days", "companion")}
+    preferences["style"] = parsed.get("style") or []
 
     missing = [f for f in REQUIRED_FIELDS if not preferences.get(f)]
-    return {"preferences": preferences, "missing": missing}
+    return {"intent": intent, "preferences": preferences, "missing": missing}
 
 
-# ── 분기: 정보가 충분한가? ───────────────────────────────────────
+# ── 분기: 이어지는 질문인가? 정보가 충분한가? ────────────────────
 # 이 함수의 반환값이 다음에 실행할 노드 이름이 됩니다.
 def route_after_intent(state: TravelState) -> str:
+    # 첫 턴에는 이어질 대화가 없으므로 followup 으로 새지 않게 messages 도 함께 확인합니다.
+    if state["intent"] == "followup" and state["messages"]:
+        return "answer_follow_up"
     return "ask_clarify" if state["missing"] else "recommend"
 
 
-# ── 노드 2: 되묻기 ──────────────────────────────────────────────
+# ── 노드 2: 이어지는 질문에 답하기 ───────────────────────────────
+# "마쓰야마성은 어떻게 가?" 처럼 방금 답변에 붙는 질문은 조건을 다시 묻지 않고 바로 답합니다.
+def answer_follow_up(state: TravelState) -> dict:
+    return {"answer": _ask(
+        FOLLOW_UP_SYSTEM,
+        state["user_input"],
+        history=state["messages"],
+        temperature=0.4,
+    )}
+
+
+# ── 노드 3: 되묻기 ──────────────────────────────────────────────
 def ask_clarify(state: TravelState) -> dict:
     user = (
         f"지금까지 파악한 정보: {state['preferences']}\n"
@@ -107,7 +128,7 @@ def ask_clarify(state: TravelState) -> dict:
     return {"answer": _ask(ASK_CLARIFY_SYSTEM, user, history=state["messages"], temperature=0.5)}
 
 
-# ── 노드 3: 후보 추천 ───────────────────────────────────────────
+# ── 노드 4: 후보 추천 ───────────────────────────────────────────
 def recommend(state: TravelState) -> dict:
     prefs = state["preferences"]
     style = ", ".join(prefs.get("style") or []) or "없음"
@@ -120,7 +141,7 @@ def recommend(state: TravelState) -> dict:
     return {"candidates": _ask(RECOMMEND_SYSTEM, user, temperature=0.7)}
 
 
-# ── 노드 4: 일정 구성 (최종 답변) ────────────────────────────────
+# ── 노드 5: 일정 구성 (최종 답변) ────────────────────────────────
 def build_itinerary(state: TravelState) -> dict:
     user = f"조건: {state['preferences']}\n\n후보 목록:\n{state['candidates']}"
     return {"answer": _ask(BUILD_ITINERARY_SYSTEM, user, history=state["messages"], temperature=0.6)}
@@ -131,6 +152,7 @@ def build_graph():
     builder = StateGraph(TravelState)
 
     builder.add_node("analyze_intent", analyze_intent)
+    builder.add_node("answer_follow_up", answer_follow_up)
     builder.add_node("ask_clarify", ask_clarify)
     builder.add_node("recommend", recommend)
     builder.add_node("build_itinerary", build_itinerary)
@@ -139,8 +161,13 @@ def build_graph():
     builder.add_conditional_edges(
         "analyze_intent",
         route_after_intent,
-        {"ask_clarify": "ask_clarify", "recommend": "recommend"},
+        {
+            "answer_follow_up": "answer_follow_up",
+            "ask_clarify": "ask_clarify",
+            "recommend": "recommend",
+        },
     )
+    builder.add_edge("answer_follow_up", END)
     builder.add_edge("ask_clarify", END)
     builder.add_edge("recommend", "build_itinerary")
     builder.add_edge("build_itinerary", END)
