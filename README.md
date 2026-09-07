@@ -181,7 +181,7 @@ builder.add_edge(START, "extract_ingredients")
 ### 5️⃣ 화면에서 확인하고 커밋
 
 `python run.py` 와 `npm run dev` 로 화면을 띄워 **예시 질문 3개가 각각 정상 동작하는지** 확인하세요.
-답변과 하단의 실행 노드 배지가 함께 보이게 캡처해서 `teams/team3/screenshots/` 에 넣고,
+답변과 하단의 실행 노드 배지가 함께 보이게 캡처해서 `teams/team3/screenshots/` 에 `case1.png` ~ `case3.png` 로 넣고,
 `README.md` 3.1 에 붙인 뒤 **우리 조 브랜치에** 커밋·푸시하시면 됩니다.
 
 ```cmd
