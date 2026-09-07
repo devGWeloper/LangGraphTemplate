@@ -53,13 +53,22 @@ class MyState(BaseGraphState):
     # draft: str
 
 
-def _ask(system: str, user: str, temperature: float = 0.3) -> str:
-    """LLM 을 한 번 호출하는 도우미입니다. 그대로 쓰셔도 됩니다."""
+HISTORY_TURNS = 6   # 프롬프트에 함께 보낼 이전 대화 개수
+
+
+def _ask(system: str, user: str, history: list[dict] | None = None,
+         temperature: float = 0.3) -> str:
+    """LLM 을 한 번 호출하는 도우미입니다. 그대로 쓰셔도 됩니다.
+
+    history 에 state["messages"] 를 넘기면 이전 대화까지 함께 보냅니다. (= 멀티턴)
+    전부 보내면 길어지므로 최근 HISTORY_TURNS 개만 씁니다.
+    """
     llm = get_llm(temperature=temperature)
-    result = llm.invoke([
-        {"role": "system", "content": system},
-        {"role": "user", "content": user},
-    ])
+    messages = [{"role": "system", "content": system}]
+    for past in (history or [])[-HISTORY_TURNS:]:
+        messages.append({"role": past["role"], "content": past["content"]})
+    messages.append({"role": "user", "content": user})
+    result = llm.invoke(messages)
     return (result.content or "").strip()
 
 
@@ -73,8 +82,9 @@ def first_node(state: MyState) -> dict:
 
 def final_node(state: MyState) -> dict:
     # 마지막 노드에서는 answer 를 반드시 채워주세요. 화면에 보이는 값입니다.
+    # history=state["messages"] 를 함께 넘기면 이전 대화를 기억합니다. (멀티턴)
     # 여기에 작성하시면 됩니다.
-    return {"answer": _ask(FINAL_NODE_SYSTEM, state["user_input"])}
+    return {"answer": _ask(FINAL_NODE_SYSTEM, state["user_input"], history=state["messages"])}
 
 
 # ── 4단계: 그래프 조립 ──────────────────────────────────────────

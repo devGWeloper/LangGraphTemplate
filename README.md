@@ -129,7 +129,7 @@ TEAM_INFO = {
 | 필드 | 누가 채우나 | 설명 |
 |---|---|---|
 | `user_input` | 서버가 채워줌 | 이번에 사용자가 입력한 문장 |
-| `messages` | 서버가 채워줌 | 이전 대화 이력 |
+| `messages` | 서버가 채워줌 | 이전 대화 이력 `[{"role": "user", "content": ...}, ...]` |
 | `answer` | **여러분이 채움** | 최종 답변. 화면에 보이는 값입니다 |
 
 여기에 필요한 걸 더하시면 됩니다.
@@ -149,6 +149,17 @@ def extract_ingredients(state: MyState) -> dict:
     text = _ask(EXTRACT_SYSTEM, state["user_input"])
     return {"ingredients": text.split(",")}
 ```
+
+**이전 대화를 기억하게 하려면** `history=state["messages"]` 를 같이 넘기면 됩니다.
+`_ask` 가 최근 대화를 프롬프트 앞에 붙여줍니다. (템플릿의 `final_node` 에 이미 들어있습니다)
+
+```python
+def answer_node(state: MyState) -> dict:
+    return {"answer": _ask(ANSWER_SYSTEM, state["user_input"], history=state["messages"])}
+```
+
+"이거 말고 다른 거", "그럼 3일로 해줘" 같은 이어지는 말은 이걸 넘겨야 알아듣습니다.
+반대로 매번 새로 판단해야 하는 노드(예: 형식이 정해진 추출)는 넘기지 않는 편이 안정적입니다.
 
 LLM 을 부를 때는 `get_llm()` 을 쓰면 됩니다. 접속 정보는 `.env` 에서 알아서 읽어옵니다.
 

@@ -52,29 +52,35 @@ class TravelState(BaseGraphState):
     candidates: str     # recommend 노드가 만든 후보 목록
 
 
-def _ask(system: str, user: str, temperature: float = 0.3) -> str:
-    """system + user 메시지로 LLM 을 한 번 호출하고 텍스트만 뽑아옵니다."""
+HISTORY_TURNS = 6   # 프롬프트에 함께 보낼 이전 대화 개수
+
+
+def _ask(system: str, user: str, history: list[dict] | None = None,
+         temperature: float = 0.3) -> str:
+    """system + 이전 대화 + 이번 발화로 LLM 을 한 번 호출하고 텍스트만 뽑아옵니다.
+
+    history 에 state["messages"] 를 넘기면 모델이 이전 대화를 그대로 읽습니다. (= 멀티턴)
+    전부 보내면 길어지므로 최근 HISTORY_TURNS 개만 씁니다.
+    """
     llm = get_llm(temperature=temperature)
-    result = llm.invoke([
-        {"role": "system", "content": system},
-        {"role": "user", "content": user},
-    ])
+    messages = [{"role": "system", "content": system}]
+    for past in (history or [])[-HISTORY_TURNS:]:
+        messages.append({"role": past["role"], "content": past["content"]})
+    messages.append({"role": "user", "content": user})
+    result = llm.invoke(messages)
     return (result.content or "").strip()
-
-
-def _history_text(messages: list[dict]) -> str:
-    """이전 대화를 프롬프트에 넣기 좋은 텍스트로 만듭니다. (최근 6턴만)"""
-    return "\n".join(f"{m['role']}: {m['content']}" for m in messages[-6:])
 
 
 # ── 노드 1: 의도 분석 ────────────────────────────────────────────
 # 사용자 발화에서 여행 조건을 뽑아내고, 추천을 진행할 만큼 정보가 모였는지 판단합니다.
 def analyze_intent(state: TravelState) -> dict:
-    user = (
-        f"이전 대화:\n{_history_text(state['messages'])}\n\n"
-        f"이번 발화:\n{state['user_input']}"
+    # history 를 넘기면 "부산" 을 첫 턴에, "3일" 을 다음 턴에 말해도 둘 다 잡힙니다.
+    raw = _ask(
+        ANALYZE_INTENT_SYSTEM,
+        state["user_input"],
+        history=state["messages"],
+        temperature=0.0,
     )
-    raw = _ask(ANALYZE_INTENT_SYSTEM, user, temperature=0.0)
 
     # LLM 이 JSON 앞뒤에 설명 문장을 붙일 수 있으니 방어적으로 파싱합니다.
     try:
@@ -98,7 +104,7 @@ def ask_clarify(state: TravelState) -> dict:
         f"지금까지 파악한 정보: {state['preferences']}\n"
         f"아직 모르는 항목: {', '.join(state['missing'])}"
     )
-    return {"answer": _ask(ASK_CLARIFY_SYSTEM, user, temperature=0.5)}
+    return {"answer": _ask(ASK_CLARIFY_SYSTEM, user, history=state["messages"], temperature=0.5)}
 
 
 # ── 노드 3: 후보 추천 ───────────────────────────────────────────
@@ -117,7 +123,7 @@ def recommend(state: TravelState) -> dict:
 # ── 노드 4: 일정 구성 (최종 답변) ────────────────────────────────
 def build_itinerary(state: TravelState) -> dict:
     user = f"조건: {state['preferences']}\n\n후보 목록:\n{state['candidates']}"
-    return {"answer": _ask(BUILD_ITINERARY_SYSTEM, user, temperature=0.6)}
+    return {"answer": _ask(BUILD_ITINERARY_SYSTEM, user, history=state["messages"], temperature=0.6)}
 
 
 def build_graph():
