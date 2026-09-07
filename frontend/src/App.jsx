@@ -35,6 +35,11 @@ export default function App() {
   const active = teams.find((team) => team.id === activeId) ?? null
   const messages = (activeId && conversations[activeId]) || []
 
+  function handleReset() {
+    if (!activeId) return
+    setConversations((prev) => ({ ...prev, [activeId]: [] }))
+  }
+
   async function handleSend(text) {
     const teamId = activeId
     const history = messages
@@ -98,6 +103,7 @@ export default function App() {
             messages={messages}
             pending={pendingId === active.id}
             onSend={handleSend}
+            onReset={handleReset}
           />
         </main>
       )}

@@ -28,7 +28,7 @@ function NotReady({ team }) {
   )
 }
 
-export default function ChatPanel({ team, messages, pending, onSend }) {
+export default function ChatPanel({ team, messages, pending, onSend, onReset }) {
   const [draft, setDraft] = useState('')
   const scrollRef = useRef(null)
   const inputRef = useRef(null)
@@ -57,8 +57,19 @@ export default function ChatPanel({ team, messages, pending, onSend }) {
   return (
     <section className="chat" aria-label={`${team.name} 대화`}>
       <header className="chat__head">
-        <h2 className="chat__title">{team.name}</h2>
-        {team.description && <p className="chat__desc">{team.description}</p>}
+        <div className="chat__headline">
+          <h2 className="chat__title">{team.name}</h2>
+          {team.description && <p className="chat__desc">{team.description}</p>}
+        </div>
+        <button
+          type="button"
+          className="chat__reset"
+          onClick={onReset}
+          disabled={empty || pending}
+          title="지금까지의 대화를 비우고 처음부터 시작합니다"
+        >
+          새 대화
+        </button>
       </header>
 
       <div className="chat__scroll" ref={scrollRef}>

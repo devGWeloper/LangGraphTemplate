@@ -228,6 +228,43 @@ pre {
 .chat__head {
   padding: 18px 22px 14px;
   border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.chat__headline {
+  min-width: 0;
+}
+
+.chat__reset {
+  flex: none;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.chat__reset:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--muted-dim);
+}
+
+.chat__reset:disabled {
+  color: var(--muted-dim);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat__reset:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .chat__title {
